@@ -97,7 +97,5 @@ record['name']
 record['link']
 
 
-
-
 # Execute the bot and see it in Action
 execute_bot()
