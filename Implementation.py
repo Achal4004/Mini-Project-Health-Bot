@@ -30,3 +30,29 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, rand
 from sklearn.tree import DecisionTreeClassifier
 classifier = DecisionTreeClassifier()
 classifier.fit(X_train, y_train)
+
+# Implementing the Visual Tree
+from sklearn.tree import _tree
+
+# Method to simulate the working of a Chatbot by extracting and formulating questions
+def execute_healthbot():
+
+    print("Please reply with yes/Yes or no/No for the following symptoms")
+    def print_disease(node):
+        #print(node)
+        node = node[0]
+        #print(len(node))
+        value  = node.nonzero()
+        #print(value)
+        disease = labelencoder.inverse_transform(value[0])
+        return disease
+
+    def tree_to_code(tree, feature_names):
+        tree_ = tree.tree_
+        #print(tree_)
+        feature_name = [
+        feature_names[i] if i != _tree.TREE_UNDEFINED else "undefined!"
+            for i in tree_.feature
+        ]
+        #print("def tree({}):".format(", ".join(feature_names)))
+        symptoms_present = []
