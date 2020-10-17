@@ -56,3 +56,20 @@ def execute_healthbot():
         ]
         #print("def tree({}):".format(", ".join(feature_names)))
         symptoms_present = []
+        def recurse(node, depth):
+            indent = "  " * depth
+            if tree_.feature[node] != _tree.TREE_UNDEFINED:
+                name = feature_name[node]
+                threshold = tree_.threshold[node]
+                print(name + " ?")
+                ans = input()
+                ans = ans.lower()
+                if ans == 'yes':
+                    val = 1
+                else:
+                    val = 0
+                if  val <= threshold:
+                    recurse(tree_.children_left[node], depth + 1)
+                else:
+                    symptoms_present.append(name)
+                    recurse(tree_.children_right[node], depth + 1)
