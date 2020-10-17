@@ -73,3 +73,31 @@ def execute_healthbot():
                 else:
                     symptoms_present.append(name)
                     recurse(tree_.children_right[node], depth + 1)
+# This section of code to be run after scraping the data
+
+doc_dataset = pd.read_csv('doctors_dataset.csv', names = ['Name', 'Description'])
+
+
+diseases = dimensionality_reduction.index
+diseases = pd.DataFrame(diseases)
+
+doctors = pd.DataFrame()
+doctors['name'] = np.nan
+doctors['link'] = np.nan
+doctors['disease'] = np.nan
+
+doctors['disease'] = diseases['prognosis']
+
+
+doctors['name'] = doc_dataset['Name']
+doctors['link'] = doc_dataset['Description']
+
+record = doctors[doctors['disease'] == 'AIDS']
+record['name']
+record['link']
+
+
+
+
+# Execute the bot and see it in Action
+execute_bot()
