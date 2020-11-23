@@ -1,4 +1,5 @@
-# Importing Libraries
+
+# Importing the libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -31,30 +32,38 @@ from sklearn.tree import DecisionTreeClassifier
 classifier = DecisionTreeClassifier()
 classifier.fit(X_train, y_train)
 
+# Saving columns 
+column     = train_dataset.columns
+column     = column[:-1]
+
+
+# Checking the Important features
+importances = classifier.feature_importances_
+indices = np.argsort(importances)[::-1]
+features = column
+
 # Implementing the Visual Tree
 from sklearn.tree import _tree
 
 # Method to simulate the working of a Chatbot by extracting and formulating questions
-def execute_healthbot():
+def execute_bot():
 
-    print("Please reply with yes/Yes or no/No for the following symptoms")
+    print("Please reply with yes/Yes or no/No for the following symptoms") 
     def print_disease(node):
         #print(node)
         node = node[0]
         #print(len(node))
-        value  = node.nonzero()
-        #print(value)
-        disease = labelencoder.inverse_transform(value[0])
+        val  = node.nonzero() 
+        #print(val)
+        disease = labelencoder.inverse_transform(val[0])
         return disease
-
     def tree_to_code(tree, feature_names):
         tree_ = tree.tree_
         #print(tree_)
         feature_name = [
-        feature_names[i] if i != _tree.TREE_UNDEFINED else "undefined!"
+            feature_names[i] if i != _tree.TREE_UNDEFINED else "undefined!"
             for i in tree_.feature
         ]
-        #print("def tree({}):".format(", ".join(feature_names)))
         symptoms_present = []
         def recurse(node, depth):
             indent = "  " * depth
@@ -77,20 +86,55 @@ def execute_healthbot():
                 present_disease = print_disease(tree_.value[node])
                 print( "You may have " +  present_disease )
                 print()
-                red_columns = minimised_dataset.columns
-                symptoms_given = red_columns[minimised_dataset.loc[present_disease].values[0].nonzero()]
+                red_cols = minimised_dataset.columns 
+                symptoms_given = red_cols[minimised_dataset.loc[present_disease].values[0].nonzero()]
                 print("symptoms present  " + str(list(symptoms_present)))
                 print()
-                print("symptoms given "  +  str(list(symptoms_given)) )
+                print("symptoms given "  +  str(list(symptoms_given)) )  
                 print()
                 confidence_level = (1.0*len(symptoms_present))/len(symptoms_given)
                 print("confidence level is " + str(confidence_level))
                 print()
-            
+                print('The model suggests:')
+                print()
+                row = doctors[doctors['disease'] == present_disease[0]]
+                print('Consult ', str(row['name'].values))
+                print()
+                print('Visit ', str(row['link'].values))
+                #print(present_disease[0])
+                
+    
         recurse(0, 1)
+    
+    tree_to_code(classifier,column)
 
-    tree_to_code(classifier,columns)
+
+
+#For getting details of doctor of the predicted disease
+
+doc_dataset = pd.read_csv('doctor.csv', names = ['Name', 'Description'])
+
+
+diseases = minimised_dataset.index
+diseases = pd.DataFrame(diseases)
+
+doctors = pd.DataFrame()
+doctors['name'] = np.nan
+doctors['link'] = np.nan
+doctors['disease'] = np.nan
+
+doctors['disease'] = diseases['prognosis']
+
+
+doctors['name'] = doc_dataset['Name']
+doctors['link'] = doc_dataset['Description']
+
+record = doctors[doctors['disease'] == 'AIDS']
+record['name']
+record['link']
+
+
+
+
 # Execute the bot
-execute_healthbot()
-
-
+execute_bot()
