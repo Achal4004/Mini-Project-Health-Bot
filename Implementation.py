@@ -5,25 +5,25 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Importing the dataset
-train_dataset = pd.read_csv('Training.csv')
+training_dataset = pd.read_csv('Training.csv')
 test_dataset = pd.read_csv('Testing.csv')
 
-train_dataset.isnull().sum()
+training_dataset.isnull().sum()
 
 # Slicing and Dicing the dataset to separate features from predictions
-X = train_dataset.iloc[:, 0:132].values
-y = train_dataset.iloc[:, -1].values
+X = training_dataset.iloc[:, 0:132].values
+y = training_dataset.iloc[:, -1].values
 
 # Dimensionality Reduction for removing redundancies
-minimised_dataset = train_dataset.groupby(train_dataset['prognosis']).max()
-minimised_dataset
+dimensionality_reduction = training_dataset.groupby(training_dataset['prognosis']).max()
+dimensionality_reduction
 
-# Encoding String values to integer constants
+# Encoding String values to integer 
 from sklearn.preprocessing import LabelEncoder
 labelencoder = LabelEncoder()
 y = labelencoder.fit_transform(y)
 
-# Splitting the dataset into training set and test set
+# Splitting the dataset into train set and test set
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)
 
@@ -32,15 +32,15 @@ from sklearn.tree import DecisionTreeClassifier
 classifier = DecisionTreeClassifier()
 classifier.fit(X_train, y_train)
 
-# Saving columns 
-column     = train_dataset.columns
-column     = column[:-1]
+# Saving the information of columns
+cols     = training_dataset.columns
+cols     = cols[:-1]
 
 
 # Checking the Important features
 importances = classifier.feature_importances_
 indices = np.argsort(importances)[::-1]
-features = column
+features = cols
 
 # Implementing the Visual Tree
 from sklearn.tree import _tree
@@ -64,6 +64,7 @@ def execute_bot():
             feature_names[i] if i != _tree.TREE_UNDEFINED else "undefined!"
             for i in tree_.feature
         ]
+        #print("def tree({}):".format(", ".join(feature_names)))
         symptoms_present = []
         def recurse(node, depth):
             indent = "  " * depth
@@ -86,8 +87,8 @@ def execute_bot():
                 present_disease = print_disease(tree_.value[node])
                 print( "You may have " +  present_disease )
                 print()
-                red_cols = minimised_dataset.columns 
-                symptoms_given = red_cols[minimised_dataset.loc[present_disease].values[0].nonzero()]
+                red_cols = dimensionality_reduction.columns 
+                symptoms_given = red_cols[dimensionality_reduction.loc[present_disease].values[0].nonzero()]
                 print("symptoms present  " + str(list(symptoms_present)))
                 print()
                 print("symptoms given "  +  str(list(symptoms_given)) )  
@@ -106,16 +107,17 @@ def execute_bot():
     
         recurse(0, 1)
     
-    tree_to_code(classifier,column)
+    tree_to_code(classifier,cols)
 
 
 
-#For getting details of doctor of the predicted disease
-
-doc_dataset = pd.read_csv('doctor.csv', names = ['Name', 'Description'])
+ #For getting details of doctor of the predicted disease
 
 
-diseases = minimised_dataset.index
+doc_dataset = pd.read_csv('doctors_dataset.csv', names = ['Name', 'Description'])
+
+
+diseases = dimensionality_reduction.index
 diseases = pd.DataFrame(diseases)
 
 doctors = pd.DataFrame()
@@ -136,5 +138,7 @@ record['link']
 
 
 
-# Execute the bot
+# Execute the bot 
 execute_bot()
+
+
